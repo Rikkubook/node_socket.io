@@ -11,8 +11,10 @@ app.get('/', (req, res) => {
   res.sendFile(__dirname + '/index.html');
 });
 io.on('connection', (socket) => { //server connection 回呼
-  socket.on('chat message', (msg) => { // 當觸發 'chat message' 拿到送出的訊息
-    io.emit('get chat message', msg); //消息發送給所有人，包括發件人。
+  socket.join("room 237"); //進入 
+  console.log(socket.rooms); 
+  socket.on('chat message', (id,msg) => { // 當觸發 'chat message' 拿到送出的訊息
+    io.to("room 237").emit('get chat message', msg); //消息發送給所有人，包括發件人。
   });
 });
 
