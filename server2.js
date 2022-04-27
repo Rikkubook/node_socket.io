@@ -13,34 +13,35 @@ const server = http.createServer(app);
 
 const { Server } = require("socket.io");
 const io = new Server(server);
-
+let roomNo ='';
+let onlineCount = 0;
 const users = {}
 //用 api 方式建立連線
 app.get('/lessen2', function (req, res) {
-    users.name = req.query.name
+    roomNo = req.query.roomNo
     res.sendFile(__dirname + '/lessen2.html');
 })
 
-io.on('connection', function (socket) {
-  console.log('1')
-  if(users.name == 'Rikku'){
-    socket.join("room1"); //進入 \
-    console.log('2')
-    console.log(io.sockets.adapter.rooms.get('room1').size)
 
-    socket.on('chat message', (msg) => { // 當觸發 'chat message' 拿到送出的訊息
-      console.log(msg)
-      io.in("room1").emit('get chat message', msg); //消息發送給所有人，包括發件人。
-    });
-  }else{
-    console.log('3')
-    socket.join("room2"); //進入 \
-    socket.on('chat message', (msg) => { // 當觸發 'chat message' 拿到送出的訊息
-      console.log(msg)
-      io.in("room2").emit('get chat message', msg); //消息發送給所有人，包括發件人。
-    });
-    // console.log('不是應該來這裡嗎?')
-  }
+io.on('connection', function (socket) {
+  socket.join(roomNo); //進入 \
+  onlineCount = io.sockets.adapter.rooms.get(roomNo).size
+
+  socket.on('join', (name) => { 
+    console.log(name)
+    io.in(roomNo).emit('join the room', name); 
+  });
+
+  socket.on('chat message', (msg) => { // 當觸發 'chat message' 拿到送出的訊息
+    console.log(msg)
+    io.in(roomNo).emit('get chat message', msg); //消息發送給所有人，包括發件人。
+  });
+
+  socket.on('disconnect', (msg) => {
+    console.log(msg)
+    console.log('user disconnected');
+    io.emit("offline", '已離線');
+  });
 })
 
 server.listen(4000, () => {

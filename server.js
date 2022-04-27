@@ -16,6 +16,9 @@ io.on('connection', (socket) => { //server connection 回呼
   socket.on('chat message', (id,msg) => { // 當觸發 'chat message' 拿到送出的訊息
     io.to("room 237").emit('get chat message', msg); //消息發送給所有人，包括發件人。
   });
+  socket.on('disconnect', () => {
+    console.log('user disconnected');
+  });
 });
 
 

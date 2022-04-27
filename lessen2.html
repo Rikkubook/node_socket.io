@@ -33,6 +33,12 @@
     var form = document.getElementById('form');
     var msg = document.getElementById('msg');
     var user = document.getElementById('user');
+  
+    const params = new Proxy(new URLSearchParams(window.location.search), {
+      get: (searchParams, prop) => searchParams.get(prop),
+    });
+    let name = params.name; // "some_value"
+    user.value = name
 
     form.addEventListener('submit', function(e) {
       e.preventDefault();
@@ -42,11 +48,27 @@
         msg.value = '';
       }
     });
+  
+    socket.emit('join', name)  
 
+    socket.on('join the room', function(name) {
+      console.log('user connected22')
+      var item = document.createElement('li');
+      item.textContent = `${name} 加入群組`;
+      messages.appendChild(item);
+      window.scrollTo(0, document.body.scrollHeight);
+    });
     socket.on('get chat message', function(msg) {
       console.log('user connected22')
       var item = document.createElement('li');
       item.textContent = msg;
+      messages.appendChild(item);
+      window.scrollTo(0, document.body.scrollHeight);
+    });
+    socket.on('offline', function(msg) {
+      console.log('offline')
+      var item = document.createElement('li');
+      item.textContent = `${msg}`;
       messages.appendChild(item);
       window.scrollTo(0, document.body.scrollHeight);
     });
