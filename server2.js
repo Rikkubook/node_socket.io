@@ -24,11 +24,12 @@ app.get('/lessen2', function (req, res) {
 
 
 io.on('connection', function (socket) {
-  socket.join(roomNo); //進入 \
-  onlineCount = io.sockets.adapter.rooms.get(roomNo).size
+  socket.join(roomNo); //進入
+  onlineCount = io.sockets.adapter.rooms.get(roomNo).size //目前上線人數
 
   socket.on('join', (name) => { 
-    console.log(name)
+    console.log(socket.id)
+    users[socket.id] = name; //給唯一key
     io.in(roomNo).emit('join the room', name); 
   });
 
@@ -38,9 +39,10 @@ io.on('connection', function (socket) {
   });
 
   socket.on('disconnect', (msg) => {
-    console.log(msg)
+    console.log(socket.id)
+    console.log(users[socket.id])
     console.log('user disconnected');
-    io.emit("offline", '已離線');
+    io.emit("offline", `${users[socket.id]} 已離線`);
   });
 })
 
