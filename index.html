@@ -49,9 +49,9 @@
       }
     });
   
-    socket.emit('join', name)  
+    socket.emit('join', name)   //2
 
-    socket.on('join the room', function(name) {
+    socket.on('join the room', function(name) { //5
       console.log('user connected22')
       var item = document.createElement('li');
       item.textContent = `${name} 加入群組`;
